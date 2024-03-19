@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:quiz_app/models/question_list_model.dart';
@@ -17,15 +18,17 @@ class QuestionListApiService{
       });
       final map = jsonDecode(response.body);
       print(map);
-      print(response.statusCode);
+      print('${response.statusCode}');
       if (response.statusCode == 200) {
-        print(response.statusCode);
+       print('${response.statusCode}');
         var a = QuestionListModel.fromJson(map);
         return a.questions;
       }
     } catch (error) {
-      debugPrint("Error : $error");
+      EasyLoading.dismiss();
+      print("Error : $error");
     }
+    EasyLoading.dismiss();
     Get.snackbar("Error", 'Data fetch Failed',
         backgroundColor: Colors.red.shade50,
         duration: const Duration(seconds: 2),

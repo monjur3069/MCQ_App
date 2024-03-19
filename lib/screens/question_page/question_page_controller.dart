@@ -1,13 +1,22 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:quiz_app/models/question_list_model.dart';
+import 'package:quiz_app/routes/routes_name.dart';
 import 'package:quiz_app/screens/question_page/widgets/question_set.dart';
 import 'package:quiz_app/services/question_list_model.dart';
+import 'package:quiz_app/utils/constant.dart';
 
 class QuestionPageController extends GetxController {
+
   RxList<Questions>? questions = <Questions>[].obs;
   RxBool isDataLoaded = false.obs;
 
   fetchQuestionListData() async {
+    EasyLoading.show(status: 'Please Wait!',dismissOnTap: false);
     var a = await QuestionListApiService.fetchQuestionListData();
     questions?.value = a ?? [];
     questions!.shuffle();
@@ -34,17 +43,50 @@ class QuestionPageController extends GetxController {
                     : answers.d,
         givenAnswer: '',
       ));
-      print(questionList);
+      debugPrint('$questionList');
       allAnswers.clear();
     });
 
-    print(questionList.length);
-    isDataLoaded.value = true;
+    debugPrint('${questionList.length}');
+    if(questionList.isNotEmpty){
+      isDataLoaded.value = true;
+      hasQuizStarted.value = true;
+      startTimer();
+    }
+    EasyLoading.dismiss();
+  }
+
+
+  String genderGroupValue = 'Male';
+  late Timer timer;
+  RxInt tick = 70.obs;
+  RxString timeString = ''.obs;
+  RxBool hasQuizStarted = false.obs;
+
+  setTime() {
+    timeString.value = DateFormat('mm:ss')
+        .format(DateTime.fromMillisecondsSinceEpoch(tick.value * 1000));
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if(tick <= 0) {
+        timer.cancel();
+        Get.offAllNamed(Routes.resultPageRoute);
+      } else {
+          tick--;
+          setTime();
+      }
+    });
   }
 
   @override
   void onInit() {
-    fetchQuestionListData();
+    var a = Get.arguments ?? 0;
+    if(highScore<a){
+      highScore = a;
+    }
+    setTime();
     super.onInit();
   }
 }

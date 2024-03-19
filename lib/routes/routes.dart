@@ -14,7 +14,7 @@ class AppRoute {
     ),
     GetPage(
       name: Routes.resultPageRoute,
-      page: () => ResultPageView(),
+      page: () => const ResultPageView(),
       binding: ResultPageBinding(),
     ),
 

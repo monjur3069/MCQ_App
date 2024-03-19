@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quiz_app/routes/routes_name.dart';
 import 'package:quiz_app/screens/question_page/widgets/question_set.dart';
+import 'package:quiz_app/screens/result_page/result_page_controller.dart';
 
 class ResultPageView extends StatelessWidget {
-  static const String routeName = '/result';
-  int rightAnswers = 0;
-
-  ResultPageView({super.key});
+  const ResultPageView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    calculateResult();
+    var controller = Get.find<ResultPageController>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Result'),
@@ -22,13 +20,13 @@ class ResultPageView extends StatelessWidget {
           children: [
             const Text('Correct Answers'),
             Text(
-              '$rightAnswers',
+              '${controller.rightAnswers}',
               style: const TextStyle(fontSize: 30),
             ),
             TextButton(
               onPressed: () {
                 questionList.clear();
-                Get.offAllNamed(Routes.quizPageRoute);
+                Get.offAllNamed(Routes.quizPageRoute,arguments: controller.rightAnswers);
               },
               child: const Text('Go Back'),
             ),
@@ -38,12 +36,4 @@ class ResultPageView extends StatelessWidget {
     );
   }
 
-  calculateResult() {
-    print(questionList);
-    for (var question in questionList) {
-      if (question.givenAnswer == question.rightAnswer) {
-        rightAnswers++;
-      }
-    }
-  }
 }
