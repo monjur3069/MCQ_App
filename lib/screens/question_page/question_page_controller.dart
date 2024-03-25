@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -22,7 +23,39 @@ class QuestionPageController extends GetxController {
     questions!.shuffle();
 
     List<String> allAnswers = [];
+    ///with forIn loop
+    for (var question in questions!) {
+      if (question.answers != null) {
+        var answersMap = question.answers!.toJson();
+        ///making list with answers
+        for (var value in answersMap.values) {
+          if (value != null) {
+            allAnswers.add(value);
+          }
+        }
+        var answers = question.answers!;
 
+        questionList.add(QuestionSet(
+          question: question.question!,
+          options: List.from(allAnswers),
+          rightAnswer: question.correctAnswer! == 'A'
+              ? answers.a
+              : question.correctAnswer! == 'B'
+              ? answers.b
+              : question.correctAnswer! == 'C'
+              ? answers.c
+              : answers.d,
+          givenAnswer: '',
+        ));
+
+        debugPrint('$allAnswers');
+      }
+
+      allAnswers.clear();
+    }
+
+  ///with foreach loop
+/*
     await Future.forEach(questions!, (question) {
       var answers = question.answers!;
       if (questions?.isNotEmpty == true && question.answers != null) {
@@ -46,8 +79,9 @@ class QuestionPageController extends GetxController {
       debugPrint('$questionList');
       allAnswers.clear();
     });
+    }
+*/
 
-    debugPrint('${questionList.length}');
     if(questionList.isNotEmpty){
       isDataLoaded.value = true;
       hasQuizStarted.value = true;
